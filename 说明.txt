@@ -1,0 +1,20 @@
+丽水学院附属高级中学学生综合素质考核管理系统
+Lishui College Affiliated Senior High School Student Comprehensive Quality Assessment Management System
+
+电脑要求：
+	1.环境：64位 win7/10/11 建议win10以上使用本系统
+	2.2GB内存，2500MB空闲空间
+	3.4GB RAM 
+	4.CPU：六代酷睿i5及以上 
+	5.GPU：AMD 锐龙530以上
+
+	部分机型如无法运行请安装python 3.9 64-bit、环境变量及pip安装运行库
+	部分设备由于界面图片分辨率较高可能会出现卡顿
+	卸载时保留数据库文件，如使用软件管家等应用程序卸载，删除残留文件项会删除数据库
+	序列号：2784-2431-0670-9173
+	安装前请关闭360安全卫士。
+
+	卸载请使用控制面板或各类软件市场提供的卸载页面卸载
+
+参考文献：
+	《Qt5.9 C++开发指南》
