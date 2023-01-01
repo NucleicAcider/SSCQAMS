@@ -1,0 +1,37 @@
+#include <windows.h>
+
+IDI_ICON1	ICON	DISCARDABLE	"G:\\Information\\C++\\Qt\\main\\icon.ico"
+
+VS_VERSION_INFO VERSIONINFO
+	FILEVERSION 3,0,2,0
+	PRODUCTVERSION 3,0,2,0
+	FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+	FILEFLAGS VS_FF_DEBUG
+#else
+	FILEFLAGS 0x0L
+#endif
+	FILEOS VOS__WINDOWS32
+	FILETYPE VFT_DLL
+	FILESUBTYPE 0x0L
+	BEGIN
+		BLOCK "StringFileInfo"
+		BEGIN
+			BLOCK "080004b0"
+			BEGIN
+				VALUE "CompanyName", "丽水学院附属高级中学\0"
+				VALUE "FileDescription", "丽水学院附属高级中学学生综合素质考核管理系统\0"
+				VALUE "FileVersion", "3.0.2.0\0"
+				VALUE "LegalCopyright", "Copyright(C) 2022 傅博韬\n本程序为自由软件，在自由软件联盟发布的GNU通用公共许可协议的约束下，你可以对其进行再发布及修改。协议版本为第三版或（随你）更新的版本。\n我们希望发布的这款程序有用，但不保证，甚至不保证它有经济价值和适合特定用途。详情参见GNU通用公共许可协议。\n你理当已收到一份GNU通用公共许可协议的副本，如果没有，请查阅<http://www.gnu.org/licenses/>\0"
+				VALUE "OriginalFilename", "main.exe\0"
+				VALUE "ProductName", "丽水学院附属高级中学学生综合素质考核管理系统\0"
+				VALUE "ProductVersion", "3.0.2.0\0"
+			END
+		END
+		BLOCK "VarFileInfo"
+		BEGIN
+			VALUE "Translation", 0x0800, 1200
+		END
+	END
+/* End of Version info */
+
