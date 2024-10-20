@@ -1,11 +1,11 @@
 import pandas as pd
 import sqlite3
-path=open("path",encoding='utf-8')
-p=path.read()
+#path=open("path",encoding='utf-8')
+#p=path.read()
 conn=sqlite3.connect('info.db')
 cursor=conn.cursor()
 cursor.execute("create table student (id int(10)  primary key, numb int(10), name varchar(20), mark int(100), birth int(100))")
-df=pd.read_excel(p)
+df=pd.read_excel("D:\Programing\C++\Qt\SSCQAMS V3.1.0\sscqams3-1\工作簿1.xlsx")
 print(df)
 for i in df.index:
     insert="insert into student (id, numb, name, mark) values ("

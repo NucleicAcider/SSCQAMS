@@ -1,6 +1,8 @@
 #include "signin.h"
 #include "ui_signin.h"
 
+QXLSX_USE_NAMESPACE            // 添加Xlsx命名空间
+
 Signin::Signin(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Signin)
@@ -85,10 +87,14 @@ void Signin::openDatabase()
         return;
     }
     query=QSqlQuery(db);
+    query.exec("SELECT COUNT(*) AS rowid FROM student");
+    query.first();
+    int userNum=query.value(0).toInt();
+    Stotal=userNum;
+    qDebug()<<"userNum:"<<userNum;
     query.exec("select * from student");
     query.last();
-    int userNum=query.value(0).toInt();
-    qDebug()<<query.lastError()<<query.value(0).toInt();
+    qDebug()<<query.lastError();
     if(query.first())
     {
         qDebug()<<query.lastError()<<query.value(1);
@@ -98,12 +104,8 @@ void Signin::openDatabase()
             studlist[a].numb=query.value(1).toInt();
             studlist[a].name=query.value(2).toString();
             studlist[a].mark=query.value(3).toInt();
-            qDebug()<<studlist[a].id;
-            qDebug()<<studlist[a].numb;
-            qDebug()<<studlist[a].name;
-            qDebug()<<studlist[a].mark;
+            qDebug()<<studlist[a].id<<"\t"<<studlist[a].numb<<"\t"<<studlist[a].name<<"\t"<<studlist[a].mark;
             query.next();
-            Stotal++;
         }
     }
     else
@@ -150,8 +152,13 @@ void Signin::openDatabase()
         }
         else
         {
-            query.last();
-            Signed=query.value(0).toInt();
+            query.exec("SELECT COUNT(*) AS rowid FROM today");
+            query.first();
+            int userNum=query.value(0).toInt();
+            Stotal=userNum;
+            qDebug()<<"userNum:"<<userNum;
+            Signed=userNum;
+            query.exec("select * from today");
             query.first();
             for(int a=0;a<Signed;a++)
             {
@@ -227,26 +234,53 @@ Signin::~Signin()
 
 void Signin::on_pushButton_clicked()
 {
-    QString FilePath=QFileDialog::getSaveFileName(this,"保存为表格文件", date, "表格文件(*.xls *.xlsx);;所有文件(*.*)");
-     if(FilePath.isEmpty()||FilePath=="")
-     {
+    QString FilePath=QFileDialog::getSaveFileName(this,"保存为表格文件", date, "表格文件(*.xlsx *.xls);;所有文件(*.*)");
+    if(FilePath.isEmpty()||FilePath=="")
+    {
          //QMessageBox::about(this, "提示", "未找到excel文件。\nERROR ID:00001");
          return;
-     }
-     QFile createFile("path");
-     if(!createFile.open(QIODevice::WriteOnly|QIODevice::Text))
-     {
-         QMessageBox::warning(this, "错误", "数据库导出文件创建失败\nERROR ID:00002", QMessageBox::Ok, QMessageBox::NoButton);
-         qDebug()<<"文件打开失败";
-     }
-     createFile.write(FilePath.toStdString().c_str());
-     createFile.close();
-    if(!QProcess::startDetached("save_excel_signin.exe",QStringList()))
-    {
-        //QMessageBox::warning(this,"提示","无法打开配置文件\nERROR ID:0000");
-        qDebug()<<"cannot open save excel.py";
-        system("save_excel_signin.exe");
     }
+
+    if (QSqlDatabase::contains("qt_sql_default_connection"))
+    {
+        db = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+    }
+    db.setDatabaseName("info.db");
+    if (!db.open())   //打开数据库
+    {
+        QMessageBox::warning(this, "错误", "打开数据库失败\nERROR ID:00003", QMessageBox::Ok, QMessageBox::NoButton);
+        qDebug() << "Database Error!";
+        return;
+    }
+    query=QSqlQuery(db);
+    query.exec("SELECT COUNT(*) AS rowid FROM today");
+    query.first();
+    int userNum=query.value(0).toInt();
+    qDebug()<<"userNum:"<<userNum;
+    query.clear();
+    query.exec("select * from today");
+    QXlsx::Document document(FilePath);
+    document.write(1,1,"学号");
+    document.write(1,2,"姓名");
+    document.write(1,3,"加分");
+    document.write(1,4,"时间");
+    if(query.first())
+    {
+        qDebug()<<query.lastError()<<query.value(1);
+        for (int a=0;a<userNum;a++)
+        {
+            document.write(a+2,1,query.value(0).toInt());
+            document.write(a+2,2,query.value(1).toString());
+            document.write(a+2,3,query.value(2).toInt());
+            document.write(a+2,4,query.value(4).toString());
+            query.next();
+        }
+    }
+    document.saveAs(FilePath);
 }
 
 void Signin::on_tableWidget_cellDoubleClicked(int row, int column)

@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QTableWidget>
 #include <QCloseEvent>
+#include "xlsxdocument.h"
 
 namespace Ui {
 class Signin;
@@ -74,6 +75,8 @@ private slots:
 
 private:
     Ui::Signin *ui;
+
+    QXlsx::Document* xlsx = nullptr;
 };
 
 #endif // SIGNIN_H

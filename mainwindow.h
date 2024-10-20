@@ -18,6 +18,7 @@
 #include <draw.h>
 #include <updatemark.h>
 #include <about.h>
+#include "xlsxdocument.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -99,5 +100,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    QXlsx::Document* xlsx = nullptr;
 };
 #endif // MAINWINDOW_H

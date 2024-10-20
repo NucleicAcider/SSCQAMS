@@ -16,6 +16,7 @@
 #include <QInputDialog>
 #include <setting.h>
 #include <windows.h>
+#include "xlsxdocument.h"
 
 namespace Ui {
 class FullCommand;

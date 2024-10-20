@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Icons/icon.png</file>
+        <file>Icons/About.ico</file>
+        <file>Icons/Check.ico</file>
+        <file>Icons/Manage.ico</file>
+        <file>Icons/sg.ico</file>
+        <file>Icons/Signin.ico</file>
+        <file>Icons/Softicon.ico</file>
+        <file>Icons/Tool.ico</file>
+    </qresource>
+</RCC>

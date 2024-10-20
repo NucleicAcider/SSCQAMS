@@ -70,7 +70,7 @@ void Check::on_lineEdit_textEdited(const QString &arg1)
         for (int a=0;a<qryModel->rowCount();a++)
         {
             qDebug()<<"record:"<<query.lastError();
-            studentinfo.record+=query.value(2).toString()+"<br/>"+query.value(1).toString()+"<br/>"+query.value(3).toString()+"<br/><br/>";
+            studentinfo.record+="时间："+query.value(2).toString()+"<br/>分数："+query.value(1).toString()+"<br/>原因："+query.value(3).toString()+"<br/><br/>";
             qDebug()<<"record:"<<studentinfo.record;
             query.next();
         }

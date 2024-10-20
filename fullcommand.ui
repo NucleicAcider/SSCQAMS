@@ -109,6 +109,9 @@
        <property name="text">
         <string/>
        </property>
+       <property name="pixmap">
+        <pixmap resource="icon.qrc">:/Icons/icon.png</pixmap>
+       </property>
       </widget>
      </item>
     </layout>
@@ -124,6 +127,8 @@
   <tabstop>commandLinkButton_input_score</tabstop>
   <tabstop>commandLinkButton_reset_all</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="icon.qrc"/>
+ </resources>
  <connections/>
 </ui>

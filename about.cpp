@@ -26,13 +26,6 @@ void About::on_pushButton_clicked()
     return;
 }
 
-
-void About::on_pushButton_2_clicked()
-{
-    system("start GNUSoftwareProtocol.html");
-}
-
-
 void About::on_pushButton_3_clicked()
 {
     QMessageBox::information(this,"联系作者","微信/QQ：2740900346\n邮箱：williamblackf@qq.com");

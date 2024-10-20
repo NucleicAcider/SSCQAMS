@@ -1,5 +1,8 @@
 #include "fullcommand.h"
 #include "ui_fullcommand.h"
+#include <QDesktopServices>
+
+QXLSX_USE_NAMESPACE            // 添加Xlsx命名空间
 
 FullCommand::FullCommand(QWidget *parent) :
     QDialog(parent),
@@ -13,7 +16,9 @@ FullCommand::FullCommand(QWidget *parent) :
     connect(timer, SIGNAL(timeout()), SLOT(time_update()));
     timer->start(1000); //1s执行一次
     QString StrWidth,StrHeigth;
-    QString filename="icon.png";
+    QString filename="D:/Programing/C++/Qt/SSCQAMS V3.1.0/sscqams3-1/Icons/icon.jpg";
+    //QDesktopServices::openUrl(QUrl::fromLocalFile(filename));
+
     QImage* img=new QImage,* scaledimg=new QImage;//分别保存原图和缩放之后的图片
     if(! ( img->load(filename) ) ) //加载图像
     {
@@ -77,10 +82,12 @@ void FullCommand::openDatabase()
         return;
     }
     query=QSqlQuery(db);
-    query.exec("select * from student");
-    query.last();
+    query.exec("SELECT COUNT(*) AS rowid FROM student");
+    query.first();
     int userNum=query.value(0).toInt();
-    qDebug()<<query.lastError()<<query.value(0).toInt();
+    Stotal=userNum;
+    qDebug()<<"userNum:"<<userNum;
+    query.exec("select * from student");
     if(query.first())
     {
         qDebug()<<query.lastError()<<query.value(1);
@@ -325,54 +332,104 @@ bool FullCommand::removeDB()
 void FullCommand::on_commandLinkButton_output_main_info_clicked()
 {
     TimeOut=0;
-    QString FilePath=QFileDialog::getSaveFileName(this,"保存为表格文件", date+"分数", "表格文件(*.xls *.xlsx);;所有文件(*.*)");
+    QString FilePath=QFileDialog::getSaveFileName(this,"保存为表格文件", datetime+"分数", "表格文件(*.xlsx *.xls);;所有文件(*.*)");
      if(FilePath.isEmpty()||FilePath=="")
      {
          //QMessageBox::about(this, "提示", "未找到excel文件。\nERROR ID:00001");
          return;
      }
-     QFile createFile("path");
-     if(!createFile.open(QIODevice::WriteOnly|QIODevice::Text))
+
+     if (QSqlDatabase::contains("qt_sql_default_connection"))
      {
-         QMessageBox::warning(this, "错误", "数据库导出文件创建失败\nERROR ID:00002", QMessageBox::Ok, QMessageBox::NoButton);
-         qDebug()<<"文件打开失败";
+         db = QSqlDatabase::database("qt_sql_default_connection");
      }
-     createFile.write(FilePath.toStdString().c_str());
-     createFile.close();
-     if(!QProcess::startDetached("save_excel.exe",QStringList()))
+     else
      {
-         //QMessageBox::warning(this,"提示","无法打开配置文件\nERROR ID:0000");
-         qDebug()<<"cannot open save excel.py";
-         system("save_excel.exe");
+         db = QSqlDatabase::addDatabase("QSQLITE");
      }
-     Sleep(3000);
+     db.setDatabaseName("info.db");
+     if (!db.open())   //打开数据库
+     {
+         QMessageBox::warning(this, "错误", "打开数据库失败\nERROR ID:00003", QMessageBox::Ok, QMessageBox::NoButton);
+         qDebug() << "Database Error!";
+         return;
+     }
+     query=QSqlQuery(db);
+     query.exec("SELECT COUNT(*) AS rowid FROM student");
+     query.first();
+     int userNum=query.value(0).toInt();
+     qDebug()<<"userNum:"<<userNum;
+     query.clear();
+     query.exec("select * from student");
+     QXlsx::Document document(FilePath);
+     document.write(1,1,"学号");
+     document.write(1,2,"姓名");
+     document.write(1,3,"分数");
+     if(query.first())
+     {
+         qDebug()<<query.lastError()<<query.value(1);
+         for (int a=0;a<userNum;a++)
+         {
+             document.write(a+2,1,query.value(1).toInt());
+             document.write(a+2,2,query.value(2).toString());
+             document.write(a+2,3,query.value(3).toInt());
+             query.next();
+         }
+     }
+     document.saveAs(FilePath);
 }
 
 
 void FullCommand::on_commandLinkButton_output_all_info_clicked()
 {
     TimeOut=0;
-    QString FilePath=QFileDialog::getSaveFileName(this,"保存为表格文件", date+"全部", "表格文件(*.xls *.xlsx);;所有文件(*.*)");
+    QString FilePath=QFileDialog::getSaveFileName(this,"保存为表格文件", datetime+"全部", "表格文件(*.xlsx *.xls);;所有文件(*.*)");
      if(FilePath.isEmpty()||FilePath=="")
      {
          //QMessageBox::about(this, "提示", "未找到excel文件。\nERROR ID:00001");
          return;
      }
-     QFile createFile("path");
-     if(!createFile.open(QIODevice::WriteOnly|QIODevice::Text))
+
+     if (QSqlDatabase::contains("qt_sql_default_connection"))
      {
-         QMessageBox::warning(this, "错误", "数据库导出文件创建失败\nERROR ID:00002", QMessageBox::Ok, QMessageBox::NoButton);
-         qDebug()<<"文件打开失败";
+         db = QSqlDatabase::database("qt_sql_default_connection");
      }
-     createFile.write(FilePath.toStdString().c_str());
-     createFile.close();
-     if(!QProcess::startDetached("save_excel_all.exe",QStringList()))
+     else
      {
-         //QMessageBox::warning(this,"提示","无法打开配置文件\nERROR ID:0000");
-         qDebug()<<"cannot open save excel.py";
-         system("save_excel_all.exe");
+         db = QSqlDatabase::addDatabase("QSQLITE");
      }
-     Sleep(3000);
+     db.setDatabaseName("info.db");
+     if (!db.open())   //打开数据库
+     {
+         QMessageBox::warning(this, "错误", "打开数据库失败\nERROR ID:00003", QMessageBox::Ok, QMessageBox::NoButton);
+         qDebug() << "Database Error!";
+         return;
+     }
+     query=QSqlQuery(db);
+     query.exec("SELECT COUNT(*) AS rowid FROM student");
+     query.first();
+     int userNum=query.value(0).toInt();
+     qDebug()<<"userNum:"<<userNum;
+     query.clear();
+     query.exec("select * from student");
+     QXlsx::Document document(FilePath);
+     document.write(1,1,"学号");
+     document.write(1,2,"姓名");
+     document.write(1,3,"分数");
+     document.write(1,4,"生日");
+     if(query.first())
+     {
+         qDebug()<<query.lastError()<<query.value(1);
+         for (int a=0;a<userNum;a++)
+         {
+             document.write(a+2,1,query.value(1).toInt());
+             document.write(a+2,2,query.value(2).toString());
+             document.write(a+2,3,query.value(3).toInt());
+             document.write(a+2,4,query.value(4).toString());
+             query.next();
+         }
+     }
+     document.saveAs(FilePath);
 }
 
 

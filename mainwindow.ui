@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>图标.png</normaloff>图标.png</iconset>
+    <normaloff>Icons/Softicon.ico</normaloff>Icons/Softicon.ico</iconset>
   </property>
   <property name="iconSize">
    <size>
@@ -262,7 +262,7 @@ font: 700 12pt &quot;Microsoft YaHei UI&quot;;</string>
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Signin.ico</normaloff>Signin.ico</iconset>
+            <normaloff>Icons/Signin.ico</normaloff>Icons/Signin.ico</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -302,7 +302,7 @@ background-color: qconicalgradient(cx:0, cy:0, angle:135, stop:0 rgba(255, 255, 
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Check.ico</normaloff>Check.ico</iconset>
+            <normaloff>Icons/Check.ico</normaloff>Icons/Check.ico</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -333,7 +333,7 @@ background-color: qconicalgradient(cx:0, cy:0, angle:135, stop:0 rgba(255, 255, 
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Manage.ico</normaloff>Manage.ico</iconset>
+            <normaloff>Icons/Manage.ico</normaloff>Icons/Manage.ico</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -364,7 +364,7 @@ background-color: qconicalgradient(cx:0, cy:0, angle:135, stop:0 rgba(255, 255, 
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>tool.ico.png</normaloff>tool.ico.png</iconset>
+            <normaloff>Icons/Tool.ico</normaloff>Icons/Tool.ico</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -395,7 +395,7 @@ background-color: qconicalgradient(cx:0, cy:0, angle:135, stop:0 rgba(255, 255, 
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>sg.png</normaloff>sg.png</iconset>
+            <normaloff>Icons/sg.ico</normaloff>Icons/sg.ico</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -426,7 +426,7 @@ background-color: qconicalgradient(cx:0, cy:0, angle:135, stop:0 rgba(255, 255, 
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>about.png</normaloff>about.png</iconset>
+            <normaloff>Icons/About.ico</normaloff>Icons/About.ico</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -449,7 +449,7 @@ background-color: qconicalgradient(cx:0, cy:0, angle:135, stop:0 rgba(255, 255, 
      <x>0</x>
      <y>0</y>
      <width>1366</width>
-     <height>27</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

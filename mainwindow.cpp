@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+QXLSX_USE_NAMESPACE            // 添加Xlsx命名空间
+
 #include "signin.h"
 #include "setting.h"
 #include <windows.h>
@@ -8,6 +10,7 @@
 #include <QByteArray>
 #include <QCryptographicHash>
 #include <QDesktopWidget>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -45,38 +48,21 @@ void MainWindow::time_update()
 
 void MainWindow::iniUI()
 {
-    this->setAutoFillBackground(true); // 这句要加上, 否则可能显示不出背景图.
+    // 设置背景图片
+    setAutoFillBackground(true);    // 这句要加上, 否则可能显示不出背景图.
     QPalette palette = this->palette();
-    palette.setBrush(QPalette::Window,
-            QBrush(QPixmap("school door.png").scaled(// 缩放背景图.
-                this->size(),
-                Qt::IgnoreAspectRatio,
-                Qt::SmoothTransformation)));             // 使用平滑的缩放方式
-    this->setPalette(palette);
-    window_width=this->size().width();
-
-    /*QString StrWidth,StrHeigth;
-    QString filename="school door.png";
-    QImage* img=new QImage,* scaledimg=new QImage;//分别保存原图和缩放之后的图片
-    if(! ( img->load(filename) ) ) //加载图像
+    QPixmap pixmap;
+    QString filePath = "./Icons/SchoolDoor.jpg";
+    //QDesktopServices::openUrl(QUrl::fromLocalFile(filePath));
+    qDebug() << "Loading pixmap from:" << filePath;
+    pixmap.load(filePath);
+    if(pixmap.isNull())
     {
-        QMessageBox::information(this,"打开图像失败","打开图像失败!");
-        delete img;
-        return;
+        qDebug() << "Failed to load pixmap. Pixmap is Null.";
+        return; // 提前返回，避免后续操作
     }
-    int Owidth=img->width(),Oheight=img->height();
-    int Fwidth,Fheight;       //缩放后的图片大小
-    ui->label->setGeometry(0,0,600,400);
-    int Mul;            //记录图片与label大小的比例，用于缩放图片
-    if(Owidth/600>=Oheight/400)
-        Mul=Owidth/600;
-    else
-        Mul=Oheight/400;
-    Fwidth=Owidth/Mul;
-    Fheight=Oheight/Mul;
-    *scaledimg=img->scaled(Fwidth,Fheight,Qt::KeepAspectRatio);
-    qDebug()<<QString("width: ")+StrWidth.setNum(Fwidth)<<QString("\nheight: ")+StrHeigth.setNum(Fheight);
-    ui->label->setPixmap(QPixmap::fromImage(*scaledimg));*/
+    palette.setBrush(QPalette::Window, QBrush(pixmap.scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+    this->setPalette(palette);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -104,21 +90,69 @@ bool MainWindow::checkDB()
             QMessageBox::about(this, "提示", "未找到excel文件。\nERROR ID:00001");
             exit(EXIT_FAILURE);
         }
-        QFile createFile("path");
-        if(!createFile.open(QIODevice::WriteOnly|QIODevice::Text))
+
+        //excel读取函数
+        xlsx = new Document(FilePath, this);        // 打开EXCEL_NAME文件，将所有数据读取到内存中，然后关闭excel文件
+        if(xlsx->load())  // 判断文件是否打开成功
         {
-            QMessageBox::warning(this, "错误", "数据库生成文件创建失败\nERROR ID:00002", QMessageBox::Ok, QMessageBox::NoButton);
-            qDebug()<<"文件打开失败";
+            qDebug() << "excel打开成功!";
+            Stotal=xlsx->dimension().rowCount()-1;
+            qDebug()<<Stotal<<"\nid\t学号\t姓名\t分数"<<endl;
+            for (int i=2; i<xlsx->dimension().rowCount()+1; i++)
+            {
+                studlist[i-2].id=i-2;
+                studlist[i-2].numb=xlsx->read(i,1).toInt();
+                studlist[i-2].name=xlsx->read(i,2).toString();
+                studlist[i-2].mark=xlsx->read(i,3).toInt();
+
+                //输出读取的数据
+                qDebug()<<studlist[i-2].id<<"\t"<<studlist[i-2].numb<<"\t"<<studlist[i-2].name<<"\t"<<studlist[i-2].mark<<endl;
+            }
+            //打开数据库，写入数据
+            if (QSqlDatabase::contains("qt_sql_default_connection"))
+            {
+                db = QSqlDatabase::database("qt_sql_default_connection");
+            }
+            else
+            {
+                db = QSqlDatabase::addDatabase("QSQLITE");
+            }
+            db.setDatabaseName("info.db");
+            if (!db.open())
+            {
+                qDebug() << "Error: Failed to connect database." << db.lastError();
+            }
+
+            QSqlQuery query;
+            QString create_sql = "create table student (id int(10)  primary key, numb int(10), name varchar(20), mark int(100), birth int(100))";
+            query.prepare(create_sql);
+            if(!query.exec())
+            {
+                qDebug() << "Error: Fail to create table." << query.lastError();
+            }
+            else
+            {
+                qDebug() << "Table created!";
+            }
+            for (int i=0; i<Stotal; i++)
+            {
+                query.prepare("insert into student (id, numb, name, mark) values (:id, :numb, :name, :mark)");
+                query.bindValue(":id", studlist[i].id);
+                query.bindValue(":numb", studlist[i].numb);
+                query.bindValue(":name", studlist[i].name);
+                query.bindValue(":mark", studlist[i].mark);
+                if(!query.exec())
+                    qDebug()<<"add record error:"<<query.lastError();
+                query.finish();
+            }
+            query.exec("create table setting (hour int(10), minute int(10), addmark int(10))");
+            query.exec("insert into setting (hour, minute, addmark) values (\"6\",\"0\",\"3\")");
+            query.exec("insert into setting (hour, minute, addmark) values (\"6\",\"10\",\"2\")");
+            query.exec("insert into setting (hour, minute, addmark) values (\"6\",\"20\",\"1\")");
+            query.exec("insert into setting (hour, minute, addmark) values (\"6\",\"30\",\"0\")");
+            query.exec("create table record ( name varchar(20), addmark int(100), datetimeweek varchar(20), reason varchar(200))");
+
         }
-        createFile.write(FilePath.toStdString().c_str());
-        createFile.close();
-        if(!QProcess::startDetached("read_excel.exe",QStringList()))
-        {
-            //QMessageBox::warning(this,"提示","无法打开配置文件\nERROR ID:0000");
-            qDebug()<<"cannot open save excel.py";
-            system("read_excel.exe");
-        }
-        Sleep(3000);
 
         QLineEdit::EchoMode echoMode=QLineEdit::Password;
         bool ok=false,OK=false;
@@ -275,13 +309,15 @@ void MainWindow::openDatabase()
     }
     query.clear();
     query=QSqlQuery(db);
+    query.exec("SELECT COUNT(*) AS rowid FROM student");
+    query.first();
+    int userNum=query.value(0).toInt();
+    Stotal=userNum;
+    qDebug()<<"userNum:"<<userNum;
     if(!query.exec("select * from student"))
     {
         qDebug()<<"cannot select"<<query.lastError()<<QDir::currentPath();
     }
-    query.last();
-    int userNum=query.value(0).toInt();
-    qDebug()<<query.lastError()<<query.value(0).toInt();
     if(query.first())
     {
         qDebug()<<query.lastError()<<query.value(1);
